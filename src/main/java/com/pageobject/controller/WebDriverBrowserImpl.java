@@ -152,8 +152,11 @@ public class WebDriverBrowserImpl implements BrowserController{
 	}
 	
 	public void waitUntil(String script, long timeout) {
-		while(!(executeScript("return " + script).toString()).equalsIgnoreCase("true")) {
+		long waitingFor = 0;
+		
+		while(!(executeScript("return " + script).toString()).equalsIgnoreCase("true") && waitingFor < timeout) {
 			waitFor(waitStep);
+			waitingFor += waitStep;
 		}
 	}
 	
@@ -309,6 +312,10 @@ public class WebDriverBrowserImpl implements BrowserController{
 
 	public String getPageSource() {
 		return driver.getPageSource();
+	}
+	
+	public void refresh(){
+		driver.navigate().refresh();
 	}
 	
 }

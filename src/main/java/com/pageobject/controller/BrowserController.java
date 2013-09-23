@@ -286,7 +286,8 @@ public interface BrowserController {
 
 	/**
 	 * Waits until the condition is true. Can be used for example as:
-	 * waitUntil("jQuery.active == 0", 5000); // wait  for all ajax calls to be done
+	 * waitUntil("jQuery.active == 0", 5000); // wait for all jQuery ajax calls
+	 * to be done or until the timeout is reached.
 	 * 
 	 * @param condition
 	 *            the condition that is supposed to be fulfilled.
@@ -320,4 +321,9 @@ public interface BrowserController {
 	 */
 	public String getPageSource();
 	
+	
+	/**
+	 * Refresh the current page.
+	 */
+	public void refresh();
 }

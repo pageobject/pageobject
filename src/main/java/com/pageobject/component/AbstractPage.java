@@ -133,6 +133,13 @@ public abstract class AbstractPage extends AbstractComponent {
 	}
 	
 	/**
+	 * Refresh the current page.
+	 */
+	public void refresh() {
+		browser.refresh();
+	}
+	
+	/**
 	 * Returns {@link TableControl} for specified table locator.
 	 * Creates new table control for each call.
 	 * @return configured table control
