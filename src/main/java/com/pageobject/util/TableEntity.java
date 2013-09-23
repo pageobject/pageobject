@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2009 AspectWorks, spol. s r.o.
  */
-package com.pageobject;
+package com.pageobject.util;
 
 import com.pageobject.component.AbstractTest;
 

@@ -8,8 +8,8 @@ package com.pageobject.component;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
-import com.pageobject.TableControl;
 import com.pageobject.controller.BrowserController;
+import com.pageobject.util.TableControl;
 
 
 /**

@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
-import com.pageobject.DefaultFormattingService;
-import com.pageobject.FormattingService;
-import com.pageobject.TableControl;
 import com.pageobject.controller.BrowserController;
+import com.pageobject.util.DefaultFormattingService;
+import com.pageobject.util.FormattingService;
+import com.pageobject.util.TableControl;
 
 /**
  * Base class for reusable web based automated test components managed by

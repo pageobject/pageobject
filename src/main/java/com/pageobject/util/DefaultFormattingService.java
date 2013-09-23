@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2010 AspectWorks, spol. s r.o.
  */
-package com.pageobject;
+package com.pageobject.util;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
