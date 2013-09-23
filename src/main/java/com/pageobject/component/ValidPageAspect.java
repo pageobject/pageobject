@@ -42,7 +42,7 @@ public class ValidPageAspect {
 	 * @param joinPoint current method call
 	 * @param page target page being called
 	 */
-	@Before("@target(component.Page) && target(page))")
+	@Before("@target(com.pageobject.component.Page) && target(page))")
 	public void validatePage(JoinPoint joinPoint, AbstractPage page) {
 		LoggerFactory.getLogger(page.getClass()).debug("Invocation of page method '{}'", joinPoint.getSignature().getName());
 		
