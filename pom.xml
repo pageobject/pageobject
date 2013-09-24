@@ -5,7 +5,7 @@
 	<groupId>com.github.pageobject</groupId>
 	<artifactId>pageobject-core</artifactId>
 	<name>Page object pattern framework</name>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
