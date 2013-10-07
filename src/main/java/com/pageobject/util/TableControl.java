@@ -308,7 +308,7 @@ public class TableControl extends AbstractComponent {
 
 		int rowNumber = 1;
 		while (isElementPresent("xpath=" + rowLocator + "[" + rowNumber + "]")) {
-			String rowContent = browser.getElementValue("xpath=" + rowLocator + "[" + rowNumber + "]");
+			String rowContent = getText("xpath=" + rowLocator + "[" + rowNumber + "]");
 			boolean result = true;
 			for (String cell : cellValues) {
 				if (rowContent.indexOf(cell) == -1) {
@@ -369,7 +369,7 @@ public class TableControl extends AbstractComponent {
 		String cellLocator = getTableLocator() + getRowLocator() + "[" + rowNumber + "]" + getCellLocator();
 		int cellNumber = 1;
 		while (isElementPresent("xpath=" + cellLocator + "[" + cellNumber + "]")) {
-			String cellContent = browser.getElementValue("xpath=" + cellLocator + "[" + cellNumber + "]");
+			String cellContent = getText("xpath=" + cellLocator + "[" + cellNumber + "]");
 			row.addCell(cellNumber, cellContent);
 			cellNumber++;
 		}
