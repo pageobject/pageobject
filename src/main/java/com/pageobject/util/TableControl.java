@@ -323,7 +323,7 @@ public class TableControl extends AbstractComponent {
 		
 		return null;
 	}
-
+	
 	/**
 	 * @param entity
 	 * @return
@@ -355,7 +355,7 @@ public class TableControl extends AbstractComponent {
 			return null;
 		}
 		
-		return getRowOnPage(rowNumber);
+		return getRow(rowNumber);
 	}
 
 	/**
@@ -363,7 +363,7 @@ public class TableControl extends AbstractComponent {
 	 * @param rowNumber number of row starting from 1
 	 * @return row control
 	 */
-	public TableRow getRowOnPage(int rowNumber) {
+	public TableRow getRow(int rowNumber) {
 		TableRow row = new TableRow();
 		
 		String cellLocator = getTableLocator() + getRowLocator() + "[" + rowNumber + "]" + getCellLocator();
@@ -386,14 +386,14 @@ public class TableControl extends AbstractComponent {
 		
 		int rowCount = getRowCountOnPage();
 		for (int i = rowCount; i > 0 ; i--) {
-			TableRow row = getRowOnPage(i);
+			TableRow row = getRow(i);
 			table.add(0, row);
 		}
 		while (isElementPresent(nextPageButton)) {
 			click(nextPageButton);
 			rowCount = getRowCountOnPage();
 			for (int i = rowCount; i > 0 ; i--) {
-				TableRow row = getRowOnPage(i);
+				TableRow row = getRow(i);
 				table.add(0, row);
 			}
 		}

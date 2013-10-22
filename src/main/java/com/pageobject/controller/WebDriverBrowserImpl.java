@@ -3,22 +3,25 @@ package com.pageobject.controller;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * WebDriver implementation of BrowserController.
@@ -26,19 +29,49 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author michal.nahlik
  *
  */
-public class WebDriverBrowserImpl implements BrowserController{
+public class WebDriverBrowserImpl implements BrowserController {
 
+	@Value("${browser.implicit.timeout:5000}")
+	private long implicitTimeout;
+	
+	@Value("${browser.script.timeout:15000}")
+	private long scriptTimeout; 
+	
+	@Value("${browser.timeout:30000}")
+	private long timeout;
+	
 	private long waitStep = 100;
+	
 	private WebDriver driver;
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	public void setDriver(WebDriver driver) {
 		this.driver = driver;
+		
+		//basic setup for the webdriver
+		setTimeout(timeout);
+		logger.info("Setting up the implicit timeout to " + implicitTimeout
+				+ " ms. Can be specified by property browser.implicit.timeout");
+		driver.manage().timeouts().implicitlyWait(implicitTimeout, TimeUnit.MILLISECONDS);
+		logger.info("Setting up the implicit timeout to " + scriptTimeout
+				+ " ms. Can be specified by property browser.script.timeout");
+		driver.manage().timeouts().setScriptTimeout(scriptTimeout, TimeUnit.MILLISECONDS);
 	}
 	
 	public WebDriver getDriver() {
 		return driver;
+	}
+	
+
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+		logger.info("Setting up the page load timeout to " +  timeout + " ms");
+		driver.manage().timeouts().pageLoadTimeout(timeout, TimeUnit.MILLISECONDS);
+	}
+	
+	public long getTimeout() {
+		return timeout;
 	}
 	
 	/**
@@ -99,7 +132,7 @@ public class WebDriverBrowserImpl implements BrowserController{
 		By byLocator = locatorPreprocessor(locator);
 		driver.findElement(byLocator).click();
 	}
-	
+		
 	public void select(String locator, String option) {
 		By byLocator = locatorPreprocessor(locator);
 		WebElement element = driver.findElement(byLocator);
@@ -136,10 +169,15 @@ public class WebDriverBrowserImpl implements BrowserController{
 	}
 
 	public void waitForElementPresent(String locator, long timeout) {
-		By byLocator = locatorPreprocessor(locator);
+		long waitingFor = 0;
+				
+		logger.info("Waiting for element " + locator + " present.");
 		
-		WebDriverWait wait = new WebDriverWait(driver, timeout);
-		wait.until(ExpectedConditions.presenceOfElementLocated(byLocator));
+		while(!isElementPresent(locator) && waitingFor < timeout) {
+			waitFor(waitStep);
+			waitingFor += waitStep;
+		}
+
 	}
 	
 	public void waitFor(long time) {
@@ -154,12 +192,17 @@ public class WebDriverBrowserImpl implements BrowserController{
 	public void waitUntil(String script, long timeout) {
 		long waitingFor = 0;
 		
+		logger.info("Waiting until the script: " + script + " returns true.");
+		
 		while(!(executeScript("return " + script).toString()).equalsIgnoreCase("true") && waitingFor < timeout) {
 			waitFor(waitStep);
 			waitingFor += waitStep;
 		}
 	}
 	
+	public boolean isTextPresent(String text) {
+		return getText("css=BODY").contains(text);
+	}
 
 	public boolean isElementEnabled(String locator) {
 		By byLocator = locatorPreprocessor(locator);
@@ -168,10 +211,17 @@ public class WebDriverBrowserImpl implements BrowserController{
 	}
 
 	public boolean isElementPresent(String locator) {
-		By byLocator = locatorPreprocessor(locator);
+		By byLocator; 
+		List<WebElement> element;
 		
-		List<WebElement> element = driver.findElements(byLocator);
-   		if(element.size() > 0) {
+		try {
+			byLocator = locatorPreprocessor(locator);
+			element = driver.findElements(byLocator);
+		} catch (NoSuchElementException nsee) {
+			return false;
+		}
+
+   		if(element != null && element.size() > 0) {
    			return true;
    		} else {
    			return false;
@@ -182,6 +232,64 @@ public class WebDriverBrowserImpl implements BrowserController{
 		driver.close();
 	}
 
+	public boolean isWindowOpened(String windowIdentifier) {
+		int typeIndex = windowIdentifier.indexOf("=");
+		String identifier = windowIdentifier.substring(typeIndex + 1);
+		String currentWindow = null;
+		
+		try {
+			currentWindow = driver.getWindowHandle();
+		} catch (NoSuchWindowException nswe) {
+			logger.info("No current window selected.");
+		}
+		
+		Set<String> windowHandles = driver.getWindowHandles();
+		Iterator<String> iterator = windowHandles.iterator();
+		
+		logger.info("Currently opened windows: " + windowHandles.size());
+		
+		while (iterator.hasNext()) {
+			
+			driver.switchTo().window(iterator.next());
+			
+			if(windowIdentifier.startsWith("title=") || typeIndex == -1) {
+				if(driver.getTitle().contains(identifier)) {
+					return true;
+				}
+			} else if (windowIdentifier.startsWith("name=")) {
+				String windowName = executeScript("return document.name").toString();
+			    if(windowName.contains(identifier)) {
+			    	return true;
+			    }
+			} else {
+				logger.warn("The window identifier type was not recognized. Trying to use the defualt method");
+				if(driver.getWindowHandle().equals(identifier)) {
+					return true;
+				}
+			}
+		}
+		
+		if(currentWindow != null) {
+			driver.switchTo().window(currentWindow);
+		}
+		
+		return false;
+	}
+	
+	public void waitUntilWindowIsPresent(String windowIdentifier) {
+		long waitedFor = 0;
+		
+		logger.info("Waiting for a window " + windowIdentifier + " to be present.");
+		
+		while(!isWindowOpened(windowIdentifier) && waitedFor < getTimeout()) {
+			waitedFor += waitStep;
+			waitFor(waitStep);
+			
+		}
+		
+		logger.info("Waited for a window " + windowIdentifier + " for " + waitedFor + " milliseconds.");
+	}
+	
 	public void selectWindow(String windowIdentifier) {
 		int typeIndex = windowIdentifier.indexOf("=");
 		String identifier = windowIdentifier.substring(typeIndex + 1);
@@ -199,7 +307,7 @@ public class WebDriverBrowserImpl implements BrowserController{
 	
 	public void selectWindowByTitle(String title) {
 		for(String handle : driver.getWindowHandles()) {
-			driver.switchTo().window(handle.toString());
+			driver.switchTo().window(handle);
 			if(driver.getTitle().contains(title)) break;
 		}
 	}
@@ -210,6 +318,10 @@ public class WebDriverBrowserImpl implements BrowserController{
 		    String name = executeScript("return document.name").toString();
 		    if(name.contains(windowName)) break;
 		}
+	}
+	
+	public void maximizeWindow() {
+		driver.manage().window().maximize();
 	}
 
 	public void captureScreenshot(String path) throws IOException {
@@ -235,6 +347,43 @@ public class WebDriverBrowserImpl implements BrowserController{
 		return driver.findElement(byLocator).getAttribute(attributeName);
 	}
 	
+	public String getSelectedValue(String locator) {
+		By byLocator = locatorPreprocessor(locator);
+		Select select = new Select(driver.findElement(byLocator));
+		return select.getFirstSelectedOption().getAttribute("value");
+	}
+	
+	public String getSelectedLabel(String locator) {
+		By byLocator = locatorPreprocessor(locator);
+		Select select = new Select(driver.findElement(byLocator));
+		return select.getFirstSelectedOption().getText();
+	}
+	
+	public String[] getSelectedValues(String locator) {
+		By byLocator = locatorPreprocessor(locator);
+		Select select = new Select(driver.findElement(byLocator));
+		List<WebElement> allSelectedOptions = select.getAllSelectedOptions();
+		List<String> allSelectedValues = new ArrayList<String> (allSelectedOptions.size());
+		
+		for (WebElement option : allSelectedOptions) {
+			allSelectedValues.add(option.getAttribute("value"));
+		}
+		
+		return allSelectedValues.toArray(new String [allSelectedValues.size()]);
+	}
+	
+	public String[] getSelectedLabels(String locator) {
+		By byLocator = locatorPreprocessor(locator);
+		Select select = new Select(driver.findElement(byLocator));
+		List<WebElement> allSelectedOptions = select.getAllSelectedOptions();
+		List<String> allSelectedLabels = new ArrayList<String> (allSelectedOptions.size());
+		
+		for (WebElement option : allSelectedOptions) {
+			allSelectedLabels.add(option.getText());
+		}
+		
+		return allSelectedLabels.toArray(new String[allSelectedLabels.size()]);
+	}
 
 	public String getText(String locator) {
 		By byLocator = locatorPreprocessor(locator);
@@ -308,6 +457,10 @@ public class WebDriverBrowserImpl implements BrowserController{
 	
 	public Object executeScript(String script) {
 		return ((JavascriptExecutor) driver).executeScript(script);
+	}
+	
+	public String getCurrentUrl() {
+		return driver.getCurrentUrl();
 	}
 
 	public String getPageSource() {

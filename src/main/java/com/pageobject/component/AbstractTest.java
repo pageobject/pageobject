@@ -40,7 +40,7 @@ public abstract class AbstractTest extends AbstractComponent {
 	 * <p>Mapped to configuration property: selenium.screenshot.dir
 	 * @param screenshotDir absolute path WITH trailing slash
 	 */
-	@Value("${selenium.screenshot.dir}")
+	@Value("${browser.screenshot.dir}")
 	public void setScreenshotDir(String screenshotDir) {
 		this.screenshotDir = screenshotDir;
 	}

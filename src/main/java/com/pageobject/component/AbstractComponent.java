@@ -42,9 +42,9 @@ public abstract class AbstractComponent {
 
 	protected static final String DEFAULT_CONTEXT = "";
 
+	protected String context = DEFAULT_CONTEXT;
 	protected BrowserController browser;
 	protected String url;
-	protected String context = DEFAULT_CONTEXT;
 
 	protected FormattingService formattingService = new DefaultFormattingService();
 
@@ -155,6 +155,25 @@ public abstract class AbstractComponent {
 			browser.type(locator, value);
 		}
 	}
+	
+	/**
+	 * Add the value after actual value of an input field if the value is not
+	 * <code>null</code>. Can also be used to set the value of
+	 * combo boxes, check boxes, etc. In these cases, value should be the value
+	 * of the option selected, not the visible text.
+	 * 
+	 * @see {@link BrowserController#type(String)}
+	 * 
+	 * @param locator
+	 *            the locator of the element
+	 * @param value
+	 *            value to type,  will be transformed to string using toString() method
+	 */
+	protected void type(String locator, Object value) {
+		if(value != null) {
+			type(locator, value.toString());
+		}
+	}
 
 	/**
 	 * Types the date formated by {@link #formattingService} into the specified
@@ -203,6 +222,25 @@ public abstract class AbstractComponent {
 	 * value is not <code>null</code>. The value can be the visible text or the
 	 * option label.
 	 * 
+	 * @see {@link AbstractComponent#select(String, String)}
+	 * 
+	 * @param locator
+	 *            input field name (e.g. username)
+	 * @param option
+	 *            value to be selected, can be specified as label, value or the
+	 *            index
+	 */
+	protected void select(String locator, Object option) {
+		if(option != null) {
+			select(locator, option.toString());
+		}
+	}
+	
+	/**
+	 * Select an option from a drop-down using an option locator only if the
+	 * value is not <code>null</code>. The value can be the visible text or the
+	 * option label.
+	 * 
 	 * @see {@link BrowserController#select(String, String)}
 	 * 
 	 * @param locator
@@ -217,6 +255,20 @@ public abstract class AbstractComponent {
 		}
 	}
 
+	/**
+	 * Checks where the text is present and visible on current page.
+	 * 
+	 * @see {@link BrowserController#isTextPresent(String)}
+	 * 
+	 * @param text
+	 *            that is supposed to be present
+	 * 
+	 * @return true if the text is present, false otherwise
+	 */
+	public boolean isTextPresent(String text) {
+		return browser.isTextPresent(text);
+	}
+	
 	/**
 	 * Tries to find an element on a current page and returns true if it is,
 	 * false otherwise.
@@ -283,6 +335,34 @@ public abstract class AbstractComponent {
 	public String getElementAttribute(String locator, String attributeName) {
 		return browser.getElementAttribute(locator, attributeName);
 	}
+	
+	/**
+	 * Get the selected value in the specified select as a String.
+	 * 
+	 * @see {@link BrowserController#getSelectedValue(String)}
+	 * 
+	 * @param locator
+	 *            element's locator
+	 * 
+	 * @return value that is selected in the select
+	 */
+	public String getSelectedValue(String locator) {
+		return browser.getSelectedValue(locator);
+	}
+	
+	/**
+	 * Get the selected label in the specified select as a String.
+	 * 
+	 * @see {@link BrowserController#getSelectedLabel(String)}
+	 * 
+	 * @param locator
+	 *            element's locator
+	 * 
+	 * @return label that is selected in the select
+	 */
+	public String getSelectedLabel(String locator) {
+		return browser.getSelectedLabel(locator);
+	}
 
 	/**
 	 * Returns the visible text of the element (including its subelements).
@@ -291,6 +371,7 @@ public abstract class AbstractComponent {
 	 * 
 	 * @param locator
 	 *            element's locator
+	 *            
 	 * @return visible text of the element and its sub-elements
 	 */
 	public String getText(String locator) {

@@ -24,6 +24,8 @@ import com.pageobject.util.TableControl;
  */
 public abstract class AbstractPage extends AbstractComponent {
 	
+	private boolean isOpened = false;
+	
 	/**
 	 * Navigates to a given page.
 	 * Optionally you may specify init parameter to pass to the page.
@@ -69,6 +71,13 @@ public abstract class AbstractPage extends AbstractComponent {
 	 * @param params optional parameters, may be <code>null</code>
 	 */
 	protected void init(Object... params) {
+		if (params != null && params.length != 0) {
+			isOpened = ((Boolean) params[0]).booleanValue();
+		}
+	}
+	
+	protected boolean isOpened(){
+		return isOpened;
 	}
 	
 	/**
@@ -141,6 +150,19 @@ public abstract class AbstractPage extends AbstractComponent {
 	
 	/**
 	 * Returns {@link TableControl} for specified table locator.
+	 * Creates new table control for each call.
+	 * 
+	 * @param tableLocator specific locator of the table
+	 * @return configured table control
+	 */
+	public TableControl getTableControl(String tableLocator) {
+		TableControl table = getTableControl();
+		table.setTableLocator(tableLocator);
+		return table;
+	}
+	
+	/**
+	 * Returns {@link TableControl} for defaul table locator.
 	 * Creates new table control for each call.
 	 * @return configured table control
 	 */

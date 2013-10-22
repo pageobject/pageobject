@@ -12,6 +12,18 @@ import java.io.IOException;
 public interface BrowserController {
 
 	/**
+	 * Sets out the maximum time that should be waited for a page to load.
+	 * 
+	 * @param milliseconds
+	 */
+	public void setTimeout(long milliseconds);
+	
+	/**
+	 * Returns the maximum amount of time that is possible to wait for a page to load.
+	 */
+	public long getTimeout();
+	
+	/**
 	 * Adds the value after actual value of an input field if the value is not
 	 * <code>null</code> or empty string. Can also be used to set the value of
 	 * combo boxes, check boxes, etc. In these cases, value should be the value
@@ -92,7 +104,8 @@ public interface BrowserController {
 	public void closePage();
 
 	/**
-	 * Closes all opened windows except the specified.
+	 * Closes all opened windows except the specified. And select the last one
+	 * as a main window.
 	 * 
 	 * @param windowIdentifier
 	 *            the window identifier can be a webpage title or a name
@@ -123,6 +136,30 @@ public interface BrowserController {
 	public String[] getAllWindowNames();
 
 	/**
+	 * Checks whether the specified window is opened.
+	 * 
+	 * @param windowIdentifier
+	 *            the window identifier can be a web page title or a name
+	 *            specified by prefix ('name=', 'title='). Doesn't have to be
+	 *            the whole text a partial is enough. If the type is not
+	 *            specified it will be taken as 'title='.
+	 *            
+	 * @return true if the window is opened;
+	 */
+	public boolean isWindowOpened(String windowIdentifier);
+	
+	/**
+	 * Waits until the specified window is present.
+	 * 
+	 * @param windowIdentifier
+	 *            the window identifier can be a web page title or a name
+	 *            specified by prefix ('name=', 'title='). Doesn't have to be
+	 *            the whole text a partial is enough. If the type is not
+	 *            specified it will be taken as 'title='.
+	 */
+	public void waitUntilWindowIsPresent(String windowIdentifier);
+	
+	/**
 	 * Selects a window by window identifier, giving a focus to it.
 	 * 
 	 * @param windowIdentifier
@@ -150,6 +187,12 @@ public interface BrowserController {
 	 *            selected. The part of the name is enough.
 	 */
 	public void selectWindowByName(String name);
+	
+	/**
+	 * Maximizes the current window.
+	 * 
+	 */
+	public void maximizeWindow();
 
 	/**
 	 * Returns a value of the specified web element.
@@ -162,7 +205,7 @@ public interface BrowserController {
 	 * @return a String representation of the element value.
 	 */
 	public String getElementValue(String locator);
-
+	
 	/**
 	 * Returns a value of the specified web element attribute.
 	 * 
@@ -178,6 +221,58 @@ public interface BrowserController {
 	 * @return String representation of the attribute value.
 	 */
 	public String getElementAttribute(String locator, String attributeName);
+	
+	/**
+	 * Get the selected value in the specified select as a String.
+	 * 
+	 * @param locator
+	 *            the locator of an web element. The locator type can be
+	 *            specified by prefix ('id=', 'name=', 'css=', 'xpath=',
+	 *            'text='). If the identifier type is not specified, it will be
+	 *            taken as it's 'id='.
+	 * 
+	 * @return value that is selected in the select
+	 */
+	public String getSelectedValue(String locator);
+	
+	/**
+	 * Get the selected label in the specified select as a String.
+	 * 
+	 * @param locator
+	 *            the locator of an web element. The locator type can be
+	 *            specified by prefix ('id=', 'name=', 'css=', 'xpath=',
+	 *            'text='). If the identifier type is not specified, it will be
+	 *            taken as it's 'id='.
+	 * 
+	 * @return label that is selected in the select
+	 */
+	public String getSelectedLabel(String locator);
+	
+	/**
+	 * Get all selected values in the specified select as a String.
+	 * 
+	 * @param locator
+	 *            the locator of an web element. The locator type can be
+	 *            specified by prefix ('id=', 'name=', 'css=', 'xpath=',
+	 *            'text='). If the identifier type is not specified, it will be
+	 *            taken as it's 'id='.
+	 * 
+	 * @return values that are selected in the select
+	 */
+	public String[] getSelectedValues(String locator);
+	
+	/**
+	 * Get all selected labels in the specified select as a String.
+	 * 
+	 * @param locator
+	 *            the locator of an web element. The locator type can be
+	 *            specified by prefix ('id=', 'name=', 'css=', 'xpath=',
+	 *            'text='). If the identifier type is not specified, it will be
+	 *            taken as it's 'id='.
+	 * 
+	 * @return labels that are selected in the select
+	 */
+	public String[] getSelectedLabels(String locator);
 
 	/**
 	 * Returns the visible innerText of specified element, including
@@ -193,6 +288,16 @@ public interface BrowserController {
 	 */
 	public String getText(String locator);
 
+	/**
+	 * Checks where the text is present and visible on current page.
+	 * 
+	 * @param text
+	 *            that is supposed to be present
+	 * 
+	 * @return true if the text is present, false otherwise
+	 */
+	public boolean isTextPresent(String text);
+	
 	/**
 	 * Checks whether the web element is present on current web page.
 	 * 
@@ -314,6 +419,13 @@ public interface BrowserController {
 	 */
 	public Object executeScript(String script);
 
+	/**
+	 * Get a current URL
+	 * 
+	 * @return current URL as a String
+	 */
+	public String getCurrentUrl();
+	
 	/**
 	 * Get a source of the current page.
 	 * 
