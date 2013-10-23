@@ -72,7 +72,7 @@
 		<aspectj.version>1.7.3</aspectj.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<log4j.version>1.2.16</log4j.version>
-		<springframework.version>3.2.4.RELEASE</springframework.version>
+		<spring.version>3.2.4.RELEASE</spring.version>
 		<selenium.version>2.33.0</selenium.version>
 		<junit.version>4.10</junit.version>
 	</properties>
@@ -115,19 +115,19 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${springframework.version}</version>
+			<version>${spring.version}</version>
 		</dependency>
 		
 		
