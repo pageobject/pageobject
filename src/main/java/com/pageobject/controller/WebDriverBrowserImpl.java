@@ -54,7 +54,7 @@ public class WebDriverBrowserImpl implements BrowserController {
 		logger.info("Setting up the implicit timeout to " + implicitTimeout
 				+ " ms. Can be specified by property browser.implicit.timeout");
 		driver.manage().timeouts().implicitlyWait(implicitTimeout, TimeUnit.MILLISECONDS);
-		logger.info("Setting up the implicit timeout to " + scriptTimeout
+		logger.info("Setting up the script timeout to " + scriptTimeout
 				+ " ms. Can be specified by property browser.script.timeout");
 		driver.manage().timeouts().setScriptTimeout(scriptTimeout, TimeUnit.MILLISECONDS);
 	}
