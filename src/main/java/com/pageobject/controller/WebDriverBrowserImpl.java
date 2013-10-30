@@ -471,4 +471,8 @@ public class WebDriverBrowserImpl implements BrowserController {
 		driver.navigate().refresh();
 	}
 	
+	public void deleteAllCookies() {
+		driver.manage().deleteAllCookies();
+	}
+	
 }

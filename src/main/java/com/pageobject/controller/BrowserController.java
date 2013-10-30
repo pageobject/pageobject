@@ -438,4 +438,10 @@ public interface BrowserController {
 	 * Refresh the current page.
 	 */
 	public void refresh();
+	
+	/**
+	 * Deletes all cookies.
+	 */
+	public void deleteAllCookies();
+	
 }
